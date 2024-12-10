@@ -4,20 +4,25 @@
 // StackedDialogGenerator
 // **************************************************************************
 
-import 'package:my_app/app/app.locator.dart';
-import 'package:my_app/ui/dialogs/info_alert/info_alert_dialog.dart';
 import 'package:stacked_services/stacked_services.dart';
+
+import 'app.locator.dart';
+import '../ui/dialogs/info_alert/info_alert_dialog.dart';
+import '../ui/dialogs/todo_confirmation/todo_confirmation_dialog.dart';
 
 enum DialogType {
   infoAlert,
+  todoConfirmation,
 }
 
 void setupDialogUi() {
   final dialogService = locator<DialogService>();
 
-  final builders = <DialogType, DialogBuilder>{
+  final Map<DialogType, DialogBuilder> builders = {
     DialogType.infoAlert: (context, request, completer) =>
         InfoAlertDialog(request: request, completer: completer),
+    DialogType.todoConfirmation: (context, request, completer) =>
+        TodoConfirmationDialog(request: request, completer: completer),
   };
 
   dialogService.registerCustomDialogBuilders(builders);
