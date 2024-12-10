@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
+import 'package:my_app/app/app.locator.dart';
 import 'package:my_app/features/todo/todo_viewmodel.dart';
-import 'package:my_app/features/todo/widgets/todo_input.dart';
-import 'package:my_app/features/todo/widgets/todo_list.dart';
+import 'package:my_app/services/todo_service.dart';
+import 'package:my_app/models/todo.dart';
 
 class TodoView extends StatelessWidget {
   const TodoView({super.key});
@@ -10,7 +11,9 @@ class TodoView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ViewModelBuilder<TodoViewModel>.reactive(
-      viewModelBuilder: () => TodoViewModel(TodoService(TodoRepository())),
+      viewModelBuilder: () => TodoViewModel(
+        locator<TodoService>(),
+      ),
       builder: (context, viewModel, child) {
         return Scaffold(
           appBar: AppBar(
@@ -18,14 +21,32 @@ class TodoView extends StatelessWidget {
           ),
           body: Column(
             children: [
-              TodoInput(
-                onSubmit: viewModel.addTodo,
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  onSubmitted: viewModel.addTodo,
+                  decoration: const InputDecoration(
+                    hintText: 'Add a todo',
+                  ),
+                ),
               ),
               Expanded(
-                child: TodoList(
-                  todos: viewModel.todos,
-                  onToggle: viewModel.toggleTodoCompletion,
-                  onDelete: viewModel.deleteTodo,
+                child: ListView.builder(
+                  itemCount: viewModel.todos.length,
+                  itemBuilder: (context, index) {
+                    final todo = viewModel.todos[index];
+                    return ListTile(
+                      title: Text(todo.title),
+                      leading: Checkbox(
+                        value: todo.isCompleted,
+                        onChanged: (_) => viewModel.toggleTodoCompletion(todo.id),
+                      ),
+                      trailing: IconButton(
+                        icon: const Icon(Icons.delete),
+                        onPressed: () => viewModel.deleteTodo(todo.id),
+                      ),
+                    );
+                  },
                 ),
               ),
             ],

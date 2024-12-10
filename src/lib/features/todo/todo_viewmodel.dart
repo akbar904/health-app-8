@@ -1,27 +1,27 @@
-import 'package:my_app/features/todo/todo_model.dart';
-import 'package:my_app/features/todo/todo_service.dart';
+import 'package:my_app/services/todo_service.dart';
 import 'package:stacked/stacked.dart';
+import 'package:my_app/models/todo.dart';
 
 class TodoViewModel extends BaseViewModel {
   final TodoService _todoService;
-
+  
   TodoViewModel(this._todoService);
+  
+  List<Todo> _todos = [];
+  List<Todo> get todos => _todos;
 
-  List<Todo> get todos => _todoService.getAllTodos();
-
-  void addTodo(String title) {
-    if (title.trim().isEmpty) return;
-    _todoService.addTodo(title);
+  Future<void> addTodo(String title) async {
+    await _todoService.addTodo(title);
     notifyListeners();
   }
 
-  void toggleTodoCompletion(String id) {
-    _todoService.toggleTodoCompletion(id);
+  Future<void> toggleTodoCompletion(String id) async {
+    await _todoService.toggleTodo(id);
     notifyListeners();
   }
 
-  void deleteTodo(String id) {
-    _todoService.deleteTodo(id);
+  Future<void> deleteTodo(String id) async {
+    await _todoService.deleteTodo(id);
     notifyListeners();
   }
 }
