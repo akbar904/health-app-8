@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
-import 'package:my_app/app/app.router.dart';
 
 class AppView extends StatelessWidget {
-  const AppView({super.key});
+  const AppView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,8 +13,19 @@ class AppView extends StatelessWidget {
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       navigatorKey: StackedService.navigatorKey,
-      onGenerateRoute: StackedRouter().onGenerateRoute,
-      initialRoute: Routes.startupView,
+      initialRoute: '/home',
+      onGenerateRoute: (settings) {
+        switch (settings.name) {
+          case '/home':
+            return MaterialPageRoute(
+              builder: (context) => const HomeView(),
+            );
+          default:
+            return MaterialPageRoute(
+              builder: (context) => const HomeView(),
+            );
+        }
+      },
     );
   }
 }

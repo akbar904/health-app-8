@@ -1,29 +1,27 @@
-import 'package:my_app/features/todo/todo_repository.dart';
 import 'package:my_app/models/todo_model.dart';
+import 'package:my_app/services/todo_repository.dart';
+import 'package:uuid/uuid.dart';
 
 class TodoService {
   final TodoRepository _repository;
+  final _uuid = const Uuid();
 
   TodoService(this._repository);
 
   Future<List<TodoModel>> getTodos() async {
-    return await _repository.getTodos();
+    return _repository.getTodos();
   }
 
   Future<void> addTodo(String title) async {
     final todo = TodoModel(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
+      id: _uuid.v4(),
       title: title,
-      createdAt: DateTime.now(),
     );
     await _repository.addTodo(todo);
   }
 
   Future<void> toggleTodoStatus(TodoModel todo) async {
-    final updatedTodo = todo.copyWith(
-      isCompleted: !todo.isCompleted,
-      completedAt: !todo.isCompleted ? DateTime.now() : null,
-    );
+    final updatedTodo = todo.copyWith(isCompleted: !todo.isCompleted);
     await _repository.updateTodo(updatedTodo);
   }
 
@@ -32,7 +30,8 @@ class TodoService {
   }
 
   Future<void> updateTodoTitle(String id, String newTitle) async {
-    final todo = (await _repository.getTodos()).firstWhere((t) => t.id == id);
+    final todos = await _repository.getTodos();
+    final todo = todos.firstWhere((t) => t.id == id);
     final updatedTodo = todo.copyWith(title: newTitle);
     await _repository.updateTodo(updatedTodo);
   }
