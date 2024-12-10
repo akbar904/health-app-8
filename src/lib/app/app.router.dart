@@ -7,13 +7,13 @@
 // ignore_for_file: no_leading_underscores_for_library_prefixes
 import 'package:flutter/material.dart' as _i4;
 import 'package:flutter/material.dart';
-import 'package:my_app/ui/views/home/home_view.dart' as _i2;
-import 'package:my_app/ui/views/startup/startup_view.dart' as _i3;
+import 'package:my_app/features/home/home_view.dart' as _i2;
+import 'package:my_app/features/startup/startup_view.dart' as _i3;
 import 'package:stacked/stacked.dart' as _i1;
 import 'package:stacked_services/stacked_services.dart' as _i5;
 
 class Routes {
-  static const homeView = '/home-view';
+  static const homeView = '/';
 
   static const startupView = '/startup-view';
 
@@ -65,13 +65,11 @@ extension NavigatorStateExtension on _i5.NavigationService {
     Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
         transition,
   ]) async {
-    return navigateTo<dynamic>(
-      Routes.homeView,
-      id: routerId,
-      preventDuplicates: preventDuplicates,
-      parameters: parameters,
-      transition: transition,
-    );
+    return navigateTo<dynamic>(Routes.homeView,
+        id: routerId,
+        preventDuplicates: preventDuplicates,
+        parameters: parameters,
+        transition: transition);
   }
 
   Future<dynamic> navigateToStartupView([
@@ -81,13 +79,11 @@ extension NavigatorStateExtension on _i5.NavigationService {
     Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
         transition,
   ]) async {
-    return navigateTo<dynamic>(
-      Routes.startupView,
-      id: routerId,
-      preventDuplicates: preventDuplicates,
-      parameters: parameters,
-      transition: transition,
-    );
+    return navigateTo<dynamic>(Routes.startupView,
+        id: routerId,
+        preventDuplicates: preventDuplicates,
+        parameters: parameters,
+        transition: transition);
   }
 
   Future<dynamic> replaceWithHomeView([
@@ -97,13 +93,11 @@ extension NavigatorStateExtension on _i5.NavigationService {
     Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
         transition,
   ]) async {
-    return replaceWith<dynamic>(
-      Routes.homeView,
-      id: routerId,
-      preventDuplicates: preventDuplicates,
-      parameters: parameters,
-      transition: transition,
-    );
+    return replaceWith<dynamic>(Routes.homeView,
+        id: routerId,
+        preventDuplicates: preventDuplicates,
+        parameters: parameters,
+        transition: transition);
   }
 
   Future<dynamic> replaceWithStartupView([
@@ -113,12 +107,10 @@ extension NavigatorStateExtension on _i5.NavigationService {
     Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)?
         transition,
   ]) async {
-    return replaceWith<dynamic>(
-      Routes.startupView,
-      id: routerId,
-      preventDuplicates: preventDuplicates,
-      parameters: parameters,
-      transition: transition,
-    );
+    return replaceWith<dynamic>(Routes.startupView,
+        id: routerId,
+        preventDuplicates: preventDuplicates,
+        parameters: parameters,
+        transition: transition);
   }
 }
