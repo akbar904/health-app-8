@@ -31,11 +31,12 @@ class HomeViewModel extends BaseViewModel {
     );
 
     if (response?.confirmed == true && response?.data != null) {
+      final Map<String, dynamic> data = response!.data as Map<String, dynamic>;
       final todo = TodoModel(
         id: DateTime.now().toString(),
-        title: response!.data['title'],
-        description: response.data['description'] ?? '',
-        dueDate: response.data['dueDate'],
+        title: data['title'] as String,
+        description: (data['description'] as String?) ?? '',
+        dueDate: data['dueDate'] as DateTime?,
         isCompleted: false,
         createdAt: DateTime.now(),
       );
@@ -56,10 +57,11 @@ class HomeViewModel extends BaseViewModel {
     );
 
     if (response?.confirmed == true && response?.data != null) {
+      final Map<String, dynamic> data = response!.data as Map<String, dynamic>;
       final updatedTodo = todo.copyWith(
-        title: response!.data['title'],
-        description: response.data['description'],
-        dueDate: response.data['dueDate'],
+        title: data['title'] as String?,
+        description: data['description'] as String?,
+        dueDate: data['dueDate'] as DateTime?,
       );
       _todoService.updateTodo(updatedTodo);
       notifyListeners();

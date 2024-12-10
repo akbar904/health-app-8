@@ -24,11 +24,15 @@ class _TodoFormDialogState extends State<TodoFormDialog> {
   @override
   void initState() {
     super.initState();
-    _titleController =
-        TextEditingController(text: widget.request.data?['title']);
-    _descriptionController =
-        TextEditingController(text: widget.request.data?['description']);
-    _dueDate = widget.request.data?['dueDate'];
+    if (widget.request.data != null) {
+      final Map<String, dynamic> data = widget.request.data as Map<String, dynamic>;
+      _titleController = TextEditingController(text: data['title'] as String?);
+      _descriptionController = TextEditingController(text: data['description'] as String?);
+      _dueDate = data['dueDate'] as DateTime?;
+    } else {
+      _titleController = TextEditingController();
+      _descriptionController = TextEditingController();
+    }
   }
 
   @override
