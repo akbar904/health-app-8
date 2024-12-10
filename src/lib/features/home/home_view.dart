@@ -3,6 +3,8 @@ import 'package:stacked/stacked.dart';
 import 'package:my_app/features/home/home_viewmodel.dart';
 import 'package:my_app/ui/widgets/todo_input.dart';
 import 'package:my_app/ui/widgets/todo_item.dart';
+import 'package:my_app/app/app.locator.dart';
+import 'package:my_app/services/todo_service.dart';
 
 class HomeView extends StackedView<HomeViewModel> {
   const HomeView({super.key});
@@ -39,5 +41,5 @@ class HomeView extends StackedView<HomeViewModel> {
 
   @override
   HomeViewModel viewModelBuilder(BuildContext context) =>
-      HomeViewModel(TodoService());
+      HomeViewModel(locator<TodoService>());
 }

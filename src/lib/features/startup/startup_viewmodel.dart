@@ -8,6 +8,6 @@ class StartupViewModel extends BaseViewModel {
 
   Future runStartupLogic() async {
     await Future.delayed(const Duration(seconds: 2));
-    await _navigationService.replaceWith(const HomeViewRoute());
+    await _navigationService.replaceWith(Routes.homeView);
   }
 }
