@@ -1,72 +1,52 @@
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
-import 'models/todo_model.dart';
+import '../../app/app.locator.dart';
 import 'todo_repository.dart';
+import 'models/todo_model.dart';
+import '../../ui/bottom_sheets/bottom_sheet_type.dart';
 
 class TodoViewModel extends BaseViewModel {
-  final TodoRepository _repository;
-  final DialogService _dialogService;
-  final BottomSheetService _bottomSheetService;
-
-  TodoViewModel({
-    required TodoRepository repository,
-    required DialogService dialogService,
-    required BottomSheetService bottomSheetService,
-  })  : _repository = repository,
-        _dialogService = dialogService,
-        _bottomSheetService = bottomSheetService;
+  final _repository = locator<TodoRepository>();
+  final _dialogService = locator<DialogService>();
+  final _bottomSheetService = locator<BottomSheetService>();
 
   List<TodoModel> _todos = [];
   List<TodoModel> get todos => _todos;
 
   Future<void> initialize() async {
-    setBusy(true);
-    await loadTodos();
-    setBusy(false);
-  }
-
-  Future<void> loadTodos() async {
     _todos = await _repository.getTodos();
-    notifyListeners();
+    rebuildUi();
   }
 
   Future<void> addTodo(String title, String description) async {
-    final todo = TodoModel(
-      id: DateTime.now().toString(),
-      title: title,
-      description: description,
-      createdAt: DateTime.now(),
+    await _repository.addTodo(
+      TodoModel(
+        id: DateTime.now().toString(),
+        title: title,
+        description: description,
+        isCompleted: false,
+        createdAt: DateTime.now(),
+      ),
     );
-    await _repository.addTodo(todo);
-    await loadTodos();
+    initialize();
   }
 
   Future<void> toggleTodo(String id) async {
-    final todo = _todos.firstWhere((todo) => todo.id == id);
-    final updatedTodo = todo.copyWith(
-      isCompleted: !todo.isCompleted,
-      completedAt: !todo.isCompleted ? DateTime.now() : null,
+    final todo = _todos.firstWhere((t) => t.id == id);
+    await _repository.updateTodo(
+      todo.copyWith(isCompleted: !todo.isCompleted),
     );
-    await _repository.updateTodo(updatedTodo);
-    await loadTodos();
+    initialize();
   }
 
   Future<void> deleteTodo(String id) async {
-    final result = await _dialogService.showCustomDialog(
-      variant: 'confirmDelete',
-      title: 'Delete Todo',
-      description: 'Are you sure you want to delete this todo?',
-    );
-
-    if (result?.confirmed ?? false) {
-      await _repository.deleteTodo(id);
-      await loadTodos();
-    }
+    await _repository.deleteTodo(id);
+    initialize();
   }
 
   Future<void> showTodoDetails(TodoModel todo) async {
     await _bottomSheetService.showCustomSheet(
-      variant: 'todoDetails',
+      variant: BottomSheetType.todoDetails,
       data: todo,
     );
   }

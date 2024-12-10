@@ -1,8 +1,8 @@
-import 'package:my_app/app/app.bottomsheets.dart';
-import 'package:my_app/app/app.dialogs.dart';
-import 'package:my_app/app/app.locator.dart';
 import 'package:stacked/stacked.dart';
 import 'package:stacked_services/stacked_services.dart';
+import '../../../app/app.locator.dart';
+import '../../../app/app.bottomsheets.dart';
+import '../../../app/app.dialogs.dart';
 
 class HomeViewModel extends BaseViewModel {
   final _dialogService = locator<DialogService>();
@@ -19,7 +19,7 @@ class HomeViewModel extends BaseViewModel {
 
   void showDialog() {
     _dialogService.showCustomDialog(
-      variant: DialogType.infoAlert,
+      variant: DialogType.confirmDelete,
       title: 'Steve Rocks!',
       description: 'Give steve $_counter stars on Github',
     );
@@ -27,7 +27,7 @@ class HomeViewModel extends BaseViewModel {
 
   void showBottomSheet() {
     _bottomSheetService.showCustomSheet(
-      variant: BottomSheetType.notice,
+      variant: BottomSheetType.todoDetails,
       title: 'title',
       description: 'desc',
     );

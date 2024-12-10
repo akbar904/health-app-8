@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:stacked/stacked.dart';
+import 'package:stacked_services/stacked_services.dart';
+import '../../app/app.locator.dart';
 import 'todo_viewmodel.dart';
+import 'todo_repository.dart';
 import 'widgets/todo_input.dart';
 import 'widgets/todo_list.dart';
 
@@ -34,11 +37,7 @@ class TodoView extends StackedView<TodoViewModel> {
   }
 
   @override
-  TodoViewModel viewModelBuilder(BuildContext context) => TodoViewModel(
-        repository: TodoRepository(),
-        dialogService: DialogService(),
-        bottomSheetService: BottomSheetService(),
-      );
+  TodoViewModel viewModelBuilder(BuildContext context) => TodoViewModel();
 
   @override
   void onViewModelReady(TodoViewModel viewModel) => viewModel.initialize();
