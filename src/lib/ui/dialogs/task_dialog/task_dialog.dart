@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:stacked_services/stacked_services.dart';
 
-class InfoAlertDialog extends StatelessWidget {
+class TaskDialog extends StatelessWidget {
   final DialogRequest dialogRequest;
   final Function onDialogTap;
 
-  const InfoAlertDialog({
+  const TaskDialog({
     Key? key,
     required this.dialogRequest,
     required this.onDialogTap,
