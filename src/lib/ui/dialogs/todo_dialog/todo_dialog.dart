@@ -13,8 +13,10 @@ class TodoDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final title = request.data['title'] ?? '';
-    final description = request.data['description'] ?? '';
+    final title = request.data?['title'] as String? ?? '';
+    final description = request.data?['description'] as String? ?? '';
+    final showConfirmButton = request.data?['showConfirmButton'] as bool? ?? false;
+    final confirmationTitle = request.data?['confirmationTitle'] as String? ?? 'Confirm';
 
     return Dialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -49,11 +51,11 @@ class TodoDialog extends StatelessWidget {
                   onPressed: () => completer(DialogResponse(confirmed: false)),
                   child: const Text('Close'),
                 ),
-                if (request.showConfirmButton ?? false) ...[
+                if (showConfirmButton) ...[
                   const SizedBox(width: 8),
                   ElevatedButton(
                     onPressed: () => completer(DialogResponse(confirmed: true)),
-                    child: Text(request.confirmationTitle ?? 'Confirm'),
+                    child: Text(confirmationTitle),
                   ),
                 ],
               ],

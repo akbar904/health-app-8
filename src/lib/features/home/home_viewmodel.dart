@@ -4,6 +4,8 @@ import 'package:stacked_services/stacked_services.dart';
 import 'package:my_app/app/app.locator.dart';
 import 'package:my_app/models/todo.dart';
 import 'package:my_app/services/todo_service.dart';
+import 'package:my_app/enums/dialog_type.dart';
+import 'package:my_app/enums/bottom_sheet_type.dart';
 
 class HomeViewModel extends BaseViewModel {
   final _todoService = locator<TodoService>();
@@ -54,6 +56,8 @@ class HomeViewModel extends BaseViewModel {
       data: {
         'title': todo.title,
         'description': todo.description,
+        'showConfirmButton': true,
+        'confirmationTitle': 'Done',
       },
     );
   }
