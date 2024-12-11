@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:stacked/stacked.dart';
+import 'package:stacked_services/stacked_services.dart';
 import 'package:my_app/models/todo_model.dart';
 import 'package:my_app/services/todo_service.dart';
 import 'package:my_app/ui/dialogs/task_dialog/task_dialog.dart';
+import 'package:my_app/app/app.locator.dart';
 
 class HomeViewModel extends BaseViewModel {
   final _todoService = TodoService();
+  final _navigationService = locator<NavigationService>();
 
   List<TodoModel> get todos => _todoService.todos;
 
@@ -30,7 +33,7 @@ class HomeViewModel extends BaseViewModel {
 
   Future<void> showEditDialog(TodoModel todo) async {
     final result = await showDialog<Map<String, String>>(
-      context: navigationService.navigatorKey!.currentContext!,
+      context: _navigationService.navigatorKey!.currentContext!,
       builder: (_) => TaskDialog(todo: todo),
     );
 

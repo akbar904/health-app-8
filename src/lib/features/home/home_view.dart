@@ -15,11 +15,11 @@ class HomeView extends StackedView<HomeViewModel> {
         actions: [
           IconButton(
             icon: const Icon(Icons.file_download),
-            onPressed: viewModel.importTodos,
+            onPressed: () => viewModel.importTodos(),
           ),
           IconButton(
             icon: const Icon(Icons.file_upload),
-            onPressed: viewModel.exportTodos,
+            onPressed: () => viewModel.exportTodos(),
           ),
         ],
       ),
@@ -30,7 +30,7 @@ class HomeView extends StackedView<HomeViewModel> {
         onDelete: viewModel.deleteTodo,
       ),
       floatingActionButton: AddTodoButton(
-        onPressed: viewModel.showAddDialog,
+        onPressed: () => viewModel.showAddDialog(context),
       ),
     );
   }

@@ -78,11 +78,10 @@ class TodoService {
 
   Future<void> importFromJson(String jsonString) async {
     try {
-      final List<dynamic> jsonList = jsonDecode(jsonString);
+      final List<dynamic> jsonList = jsonDecode(jsonString) as List<dynamic>;
       _todos.clear();
       _todos.addAll(
-        jsonList
-            .map((json) => TodoModel.fromJson(json as Map<String, dynamic>)),
+        jsonList.map((json) => TodoModel.fromJson(json as Map<String, dynamic>)),
       );
       _sortTodos();
     } catch (e) {
