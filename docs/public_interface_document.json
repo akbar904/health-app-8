@@ -1,7 +1,7 @@
 {
   "package_name": "com.example_org.my_app",
-  "project_description": "A Flutter project using the Stacked architecture, featuring routing, dependency injection, and dialog/bottom sheet management.",
-  "architecture_overview": "The application follows the Stacked architecture with separate folders for app setup, features, UI components, and utilities. It uses Stacked for state management, routing, and dependency injection.",
+  "project_description": "The Flutter application is a Todo list management tool that allows users to create, view, update, and delete todo items. It follows the Stacked architecture pattern and utilizes various Stacked services for state management, routing, dependency injection, and UI component management (dialogs, bottom sheets).",
+  "architecture_overview": "The application is structured around the Stacked architecture, with separate folders for app setup, features, UI components, and utilities. It uses Stacked services for state management, routing, and dependency injection. The app.locator.dart file sets up the service locator, while app.router.dart manages the navigation and routing between views. The application also includes custom dialogs and bottom sheets, which are defined and registered in the app.dialogs.dart and app.bottomsheets.dart files, respectively.",
   "files": [
     {
       "name": "lib/app/app.dart",
@@ -15,16 +15,6 @@
         "package:my_app/ui/dialogs/info_alert/info_alert_dialog.dart",
         "package:my_app/features/home/home_view.dart",
         "package:my_app/features/startup/startup_view.dart"
-      ]
-    },
-    {
-      "name": "lib/features/app/app_view.dart",
-      "description": "Defines the root widget of the application. So this files can not be deleted at all.",
-      "class_diagram": "@startuml\nclass AppView\nclass _App\n@enduml",
-      "methods": [],
-      "dependencies": [
-        "package:stacked/stacked.dart",
-        "package:stacked_services/stacked_services.dart"
       ]
     },
     {
@@ -113,6 +103,1110 @@
         "package:my_app/app/app.locator.dart",
         "package:my_app/features/app/app_view.dart"
       ]
+    },
+    {
+      "name": "lib/app/app.dialogs.dart",
+      "description": "This Dart file is responsible for setting up and managing the dialog system in a Flutter application. It defines the available dialog types, registers custom dialog builders, and provides a centralized way to display different types of dialogs throughout the app.",
+      "class_diagram": "@startuml\n\nclass DialogType {\n  infoAlert\n}\n\nclass DialogBuilder {\n  build(context, request, completer)\n}\n\nclass DialogService {\n  registerCustomDialogBuilders(builders)\n}\n\nDialogType --> DialogBuilder\nDialogService --> DialogBuilder\n\n@enduml",
+      "methods": [
+        {
+          "name": "setupDialogUi",
+          "description": "Registers the custom dialog builders with the DialogService, enabling the application to display different types of dialogs.",
+          "parameters": null,
+          "return_type": "void"
+        }
+      ],
+      "dependencies": [
+        "my_app/app/app.locator.dart",
+        "my_app/ui/dialogs/info_alert/info_alert_dialog.dart",
+        "stacked_services/stacked_services.dart"
+      ]
+    },
+    {
+      "name": "lib/app/app.bottomsheets.dart",
+      "description": "This file is responsible for setting up and managing the bottom sheet UI in the application. It provides a centralized location for configuring the different types of bottom sheets used throughout the app.",
+      "class_diagram": "@startuml\nclass BottomSheetService {\n  + setCustomSheetBuilders(builders: Map<BottomSheetType, SheetBuilder>)\n}\n\nclass BottomSheetType {\n  + notice\n}\n\nclass NoticeSheet {\n  + NoticeSheet(request: SheetRequest, completer: SheetCompleter)\n}\n\nBottomSheetService --> BottomSheetType\nBottomSheetService --> NoticeSheet\n@enduml",
+      "methods": [
+        {
+          "name": "setupBottomSheetUi",
+          "description": "Configures the available bottom sheet types and their corresponding builders. This is called to set up the bottom sheet functionality in the app.",
+          "parameters": [
+            "None"
+          ],
+          "return_type": "void"
+        }
+      ],
+      "dependencies": [
+        "my_app/app/app.locator.dart",
+        "my_app/ui/bottom_sheets/notice/notice_sheet.dart",
+        "stacked_services/stacked_services.dart"
+      ]
+    },
+    {
+      "name": "lib/features/todo/todo_view.dart",
+      "description": "The TodoView class is responsible for rendering the user interface for the todo list feature. It manages the state of the todo items and provides functionality to add, toggle, and delete todos.",
+      "class_diagram": "@startuml\nclass TodoView {\n  +build(context): Widget\n  +showAddTodoSheet(): void\n}\n\nclass TodoViewModel {\n  +todos: List<Todo>\n  +initialize(): void\n  +toggleTodo(todo: Todo): void\n  +deleteTodo(id: String): void\n}\n\nclass TodoItem {\n  +todo: Todo\n  +onToggle(): void\n  +onDelete(): void\n}\n\nclass Todo {\n  +id: String\n  +title: String\n  +completed: bool\n}\n@enduml",
+      "methods": [
+        {
+          "name": "build",
+          "description": "Builds the UI for the TodoView, including the app bar, list of todos, and the floating action button to add a new todo.",
+          "parameters": [
+            "context"
+          ],
+          "return_type": "Widget"
+        },
+        {
+          "name": "showAddTodoSheet",
+          "description": "Displays a bottom sheet for the user to add a new todo item.",
+          "parameters": null,
+          "return_type": "void"
+        }
+      ],
+      "dependencies": [
+        "package:flutter/material.dart",
+        "package:stacked/stacked.dart",
+        "package:my_app/features/todo/todo_viewmodel.dart",
+        "package:my_app/features/todo/widgets/todo_item.dart"
+      ]
+    },
+    {
+      "name": "lib/features/todo/todo_repository.dart",
+      "description": "The TodoRepository class is responsible for managing the CRUD (Create, Read, Update, Delete) operations for todo items in the application. It serves as the primary data access layer for the todo feature, abstracting away the underlying storage implementation details and providing a consistent interface for interacting with todo data.",
+      "class_diagram": "@startuml\nclass TodoRepository {\n  - List<Todo> _todos\n  + Future<List<Todo>> getTodos()\n  + Future<void> addTodo(Todo todo)\n  + Future<void> updateTodo(Todo todo)\n  + Future<void> deleteTodo(String id)\n}\n@enduml",
+      "methods": [
+        {
+          "name": "getTodos",
+          "description": "Retrieves the list of all todo items.",
+          "parameters": null,
+          "return_type": "Future<List<Todo>>"
+        },
+        {
+          "name": "addTodo",
+          "description": "Adds a new todo item to the repository.",
+          "parameters": [
+            "Todo todo"
+          ],
+          "return_type": "Future<void>"
+        },
+        {
+          "name": "updateTodo",
+          "description": "Updates an existing todo item in the repository.",
+          "parameters": [
+            "Todo todo"
+          ],
+          "return_type": "Future<void>"
+        },
+        {
+          "name": "deleteTodo",
+          "description": "Removes a todo item from the repository based on its ID.",
+          "parameters": [
+            "String id"
+          ],
+          "return_type": "Future<void>"
+        }
+      ],
+      "dependencies": [
+        "lib/features/todo/models/todo.dart"
+      ]
+    },
+    {
+      "name": "lib/app/app.router.dart",
+      "description": "This file is responsible for managing the navigation and routing within the Flutter application. It is generated using the `stacked_generator` package, which provides a set of tools for building robust and scalable Flutter applications using the Stacked architecture pattern.",
+      "class_diagram": "@startuml\nclass Routes {\n  static const homeView: '/home-view'\n  static const startupView: '/startup-view'\n  static const all: Set<String>\n}\n\nclass StackedRouter {\n  + List<RouteDef> get routes()\n  + Map<Type, StackedRouteFactory> get pagesMap()\n}\n\nclass NavigatorStateExtension {\n  + Future<dynamic> navigateToHomeView()\n  + Future<dynamic> navigateToStartupView()\n  + Future<dynamic> replaceWithHomeView()\n  + Future<dynamic> replaceWithStartupView()\n}\n@enduml",
+      "methods": [
+        {
+          "name": "Routes",
+          "description": "This class defines the available routes in the application, including the 'homeView' and 'startupView' routes.",
+          "parameters": null,
+          "return_type": null
+        },
+        {
+          "name": "StackedRouter",
+          "description": "This class is responsible for managing the routing and navigation within the application. It defines the available routes and provides a mapping between route names and their corresponding pages.",
+          "parameters": null,
+          "return_type": null
+        },
+        {
+          "name": "NavigatorStateExtension",
+          "description": "This class provides extension methods for the `NavigationService` class, which is part of the Stacked Services library. These methods allow for easy navigation to the 'homeView' and 'startupView' routes, as well as the ability to replace the current route with either of these views.",
+          "parameters": [
+            "int? routerId",
+            "bool preventDuplicates = true",
+            "Map<String, String>? parameters",
+            "Widget Function(BuildContext, Animation<double>, Animation<double>, Widget)? transition"
+          ],
+          "return_type": "Future<dynamic>"
+        }
+      ],
+      "dependencies": [
+        "flutter/material.dart",
+        "my_app/ui/views/home/home_view.dart",
+        "my_app/ui/views/startup/startup_view.dart",
+        "stacked/stacked.dart",
+        "stacked_services/stacked_services.dart"
+      ]
+    },
+    {
+      "name": "lib/services/analytic_service.dart",
+      "description": "The AnalyticService class is a wrapper for analytics functionality, encapsulating the implementation details and providing a unified interface for interacting with the analytics system.",
+      "class_diagram": "@startuml\nclass AnalyticService {\n  + init(): Future<void>\n}\n\nclass InitializableDependency {\n  + init(): Future<void>\n}\n\nAnalyticService -|> InitializableDependency\n@enduml",
+      "methods": [
+        {
+          "name": "init",
+          "description": "Initializes the AnalyticService, performing any necessary setup or configuration.",
+          "parameters": null,
+          "return_type": "Future<void>"
+        }
+      ],
+      "dependencies": [
+        "package:stacked/stacked_annotations.dart"
+      ]
+    },
+    {
+      "name": "lib/ui/bottom_sheets/notice/notice_sheet_model.dart",
+      "description": "The `NoticeSheetModel` class is responsible for managing the state and behavior of the notice sheet UI component in the application. It acts as a view model for the notice sheet, handling the logic and interactions associated with displaying and managing notices.",
+      "class_diagram": "@startuml\nclass NoticeSheetModel extends BaseViewModel {\n}\n@enduml",
+      "methods": [],
+      "dependencies": [
+        "package:stacked/stacked.dart"
+      ]
+    },
+    {
+      "name": "lib/services/todo_service.dart",
+      "description": "The TodoService class is responsible for managing the CRUD (Create, Read, Update, Delete) operations for todo items in the application. It serves as the central service layer between the user interface and the repository, providing a standardized set of methods for interacting with todo data.",
+      "class_diagram": "@startuml\nclass TodoService {\n  +getTodos(): Future<List<Todo>>\n  +addTodo(Todo todo): Future<void>\n  +updateTodo(Todo todo): Future<void>\n  +deleteTodo(String id): Future<void>\n  +toggleTodoCompletion(Todo todo): Future<void>\n}\n\nTodoService o-- TodoRepository\n@enduml",
+      "methods": [
+        {
+          "name": "getTodos",
+          "description": "Retrieves the list of all todo items from the repository.",
+          "parameters": [],
+          "return_type": "Future<List<Todo>>"
+        },
+        {
+          "name": "addTodo",
+          "description": "Adds a new todo item to the repository.",
+          "parameters": [
+            "Todo todo"
+          ],
+          "return_type": "Future<void>"
+        },
+        {
+          "name": "updateTodo",
+          "description": "Updates an existing todo item in the repository.",
+          "parameters": [
+            "Todo todo"
+          ],
+          "return_type": "Future<void>"
+        },
+        {
+          "name": "deleteTodo",
+          "description": "Deletes a todo item from the repository.",
+          "parameters": [
+            "String id"
+          ],
+          "return_type": "Future<void>"
+        },
+        {
+          "name": "toggleTodoCompletion",
+          "description": "Toggles the completion status of a todo item in the repository.",
+          "parameters": [
+            "Todo todo"
+          ],
+          "return_type": "Future<void>"
+        }
+      ],
+      "dependencies": [
+        "package:my_app/models/todo.dart",
+        "package:my_app/features/todo/todo_repository.dart"
+      ]
+    },
+    {
+      "name": "lib/ui/common/ui_helpers.dart",
+      "description": "This Dart file provides a set of UI helper functions and constants that can be used throughout a Flutter application. It helps create a consistent and responsive user interface by offering standardized spacing, sizing, and font scaling utilities.",
+      "class_diagram": "@startuml\nclass UIHelpers {\n  + const horizontalSpaceTiny: SizedBox\n  + const horizontalSpaceSmall: SizedBox\n  + const horizontalSpaceMedium: SizedBox\n  + const horizontalSpaceLarge: SizedBox\n  + const verticalSpaceTiny: SizedBox\n  + const verticalSpaceSmall: SizedBox\n  + const verticalSpaceMedium: SizedBox\n  + const verticalSpaceLarge: SizedBox\n  + const verticalSpaceMassive: SizedBox\n  + const spacedDivider: Column\n  + verticalSpace(double height): SizedBox\n  + screenWidth(BuildContext context): double\n  + screenHeight(BuildContext context): double\n  + screenHeightFraction(BuildContext context, {int dividedBy = 1, double offsetBy = 0, double max = 3000}): double\n  + screenWidthFraction(BuildContext context, {int dividedBy = 1, double offsetBy = 0, double max = 3000}): double\n  + halfScreenWidth(BuildContext context): double\n  + thirdScreenWidth(BuildContext context): double\n  + quarterScreenWidth(BuildContext context): double\n  + getResponsiveHorizontalSpaceMedium(BuildContext context): double\n  + getResponsiveSmallFontSize(BuildContext context): double\n  + getResponsiveMediumFontSize(BuildContext context): double\n  + getResponsiveLargeFontSize(BuildContext context): double\n  + getResponsiveExtraLargeFontSize(BuildContext context): double\n  + getResponsiveMassiveFontSize(BuildContext context): double\n  + getResponsiveFontSize(BuildContext context, {double? fontSize, double? max}): double\n}\n@enduml",
+      "methods": [
+        {
+          "name": "horizontalSpaceTiny",
+          "description": "A horizontal spacing widget with a width of 5 units.",
+          "parameters": null,
+          "return_type": "Widget"
+        },
+        {
+          "name": "screenWidth",
+          "description": "Returns the width of the screen in the current context.",
+          "parameters": [
+            "BuildContext"
+          ],
+          "return_type": "double"
+        },
+        {
+          "name": "screenHeightFraction",
+          "description": "Returns a fraction of the screen height based on the provided parameters.",
+          "parameters": [
+            "BuildContext",
+            "int dividedBy = 1",
+            "double offsetBy = 0",
+            "double max = 3000"
+          ],
+          "return_type": "double"
+        },
+        {
+          "name": "getResponsiveSmallFontSize",
+          "description": "Returns a responsive font size for small text based on the screen width.",
+          "parameters": [
+            "BuildContext"
+          ],
+          "return_type": "double"
+        },
+        {
+          "name": "getResponsiveFontSize",
+          "description": "Returns a responsive font size based on the screen width and the provided parameters.",
+          "parameters": [
+            "BuildContext",
+            "double? fontSize",
+            "double? max"
+          ],
+          "return_type": "double"
+        }
+      ],
+      "dependencies": [
+        "dart:math",
+        "package:flutter/material.dart"
+      ]
+    },
+    {
+      "name": "lib/ui/dialogs/info_alert/info_alert_dialog_model.dart",
+      "description": "This Dart file contains the `InfoAlertDialogModel` class, which is responsible for managing the state and behavior of an information alert dialog in a Flutter application.",
+      "class_diagram": "@startuml\nclass InfoAlertDialogModel {\n}\n\nInfoAlertDialogModel -|> BaseViewModel\n@enduml",
+      "methods": [],
+      "dependencies": [
+        "package:stacked/stacked.dart"
+      ]
+    },
+    {
+      "name": "lib/l10n/localizations_extension.dart",
+      "description": "This file provides a convenient extension on the BuildContext that allows easy access to the current AppLocalizations. It simplifies the process of retrieving and using localized strings throughout the application.",
+      "class_diagram": "",
+      "methods": [
+        {
+          "name": "get localizations",
+          "description": "Retrieves the current AppLocalizations instance, providing a shorthand way to access localized strings.",
+          "parameters": null,
+          "return_type": "AppLocalizations"
+        }
+      ],
+      "dependencies": [
+        "package:flutter/widgets.dart",
+        "package:flutter_gen/gen_l10n/app_localizations.dart"
+      ]
+    },
+    {
+      "name": "lib/app/app.locator.dart",
+      "description": "This file is responsible for setting up and configuring the application's service locator, which is a key component in the Stacked architecture. The service locator is used to manage the dependencies and lifetime of various services and utilities used throughout the application.",
+      "class_diagram": "",
+      "methods": [
+        {
+          "name": "setupLocator",
+          "description": "This method is responsible for registering the various services and utilities that the application depends on. It sets up the service locator with the necessary dependencies, ensuring they are available throughout the app.",
+          "parameters": [
+            "environment",
+            "environmentFilter"
+          ],
+          "return_type": "Future<void>"
+        }
+      ],
+      "dependencies": [
+        "stacked_services/src/bottom_sheet/bottom_sheet_service.dart",
+        "stacked_services/src/dialog/dialog_service.dart",
+        "stacked_services/src/navigation/navigation_service.dart",
+        "stacked_shared/stacked_shared.dart"
+      ]
+    },
+    {
+      "name": "lib/observer/screen_observer.dart",
+      "description": "The ScreenObserver class is responsible for tracking the screen views in the Flutter application using the AnalyticService. It acts as a NavigatorObserver, intercepting navigation events and recording screen transitions for analytics purposes.",
+      "class_diagram": "@startuml\nclass ScreenObserver extends NavigatorObserver {\n  + void didPush(Route<dynamic> route, Route<dynamic>? previousRoute)\n  + void didReplace({Route<dynamic>? newRoute, Route<dynamic>? oldRoute})\n  + void didPop(Route<dynamic> route, Route<dynamic>? previousRoute)\n  - void _trackScreenView(Route<dynamic> route)\n}\n\nNavigatorObserver <|-- ScreenObserver\n\nScreenObserver o-- AnalyticService\n@enduml",
+      "methods": [
+        {
+          "name": "didPush",
+          "description": "Tracks the screen view when a new route is pushed onto the navigation stack.",
+          "parameters": [
+            "Route<dynamic> route",
+            "Route<dynamic>? previousRoute"
+          ],
+          "return_type": "void"
+        },
+        {
+          "name": "didReplace",
+          "description": "Tracks the screen view when a route is replaced in the navigation stack.",
+          "parameters": [
+            "Route<dynamic>? newRoute",
+            "Route<dynamic>? oldRoute"
+          ],
+          "return_type": "void"
+        },
+        {
+          "name": "didPop",
+          "description": "Tracks the screen view when a route is popped from the navigation stack.",
+          "parameters": [
+            "Route<dynamic> route",
+            "Route<dynamic>? previousRoute"
+          ],
+          "return_type": "void"
+        },
+        {
+          "name": "_trackScreenView",
+          "description": "Sends the screen view information to the AnalyticService for tracking.",
+          "parameters": [
+            "Route<dynamic> route"
+          ],
+          "return_type": "void"
+        }
+      ],
+      "dependencies": [
+        "package:flutter/material.dart",
+        "my_app/services/analytic_service.dart"
+      ]
+    },
+    {
+      "name": "lib/ui/views/app/app_viewmodel.dart",
+      "description": "The AppViewModel class is responsible for managing the state and behavior of the app's main view. It serves as the ViewModel component in the MVVM (Model-View-ViewModel) architectural pattern used in the Flutter application.",
+      "class_diagram": "@startuml\nclass AppViewModel {\n  +void doSomething()\n}\n@enduml",
+      "methods": [
+        {
+          "name": "doSomething",
+          "description": "Performs some core functionality or action within the app's main view.",
+          "parameters": null,
+          "return_type": "void"
+        }
+      ],
+      "dependencies": [
+        "package:stacked/stacked.dart"
+      ]
+    },
+    {
+      "name": "lib/ui/views/app/app_view.dart",
+      "description": "The `AppView` class is the entry point for the Flutter application. It sets up the initial app configuration, including the navigation, localization, and screen observation functionality. This file is responsible for defining the overall structure and behavior of the app, providing a foundation for the rest of the application to build upon.",
+      "class_diagram": "@startuml\nclass AppView {\n  +build(BuildContext context): Widget\n}\n\nclass _App {\n  +build(BuildContext context, AppViewModel viewModel): Widget\n}\n\nAppView --> _App\n_App --> MaterialApp\n_App --> ScreenObserver\n_App --> StackedService\n@enduml",
+      "methods": [
+        {
+          "name": "build",
+          "description": "Builds the main app widget, which includes the MaterialApp, navigation, localization, and screen observation functionality.",
+          "parameters": [
+            "BuildContext context"
+          ],
+          "return_type": "Widget"
+        }
+      ],
+      "dependencies": [
+        "package:flutter/material.dart",
+        "package:my_app/app/app.router.dart",
+        "package:my_app/l10n/supported_locales.dart",
+        "package:my_app/observer/screen_observer.dart",
+        "package:my_app/ui/views/app/app_viewmodel.dart",
+        "package:stacked/stacked.dart",
+        "package:stacked_services/stacked_services.dart"
+      ]
+    },
+    {
+      "name": "lib/ui/views/home/home_viewmodel.dart",
+      "description": "The `HomeViewModel` class is responsible for managing the state and behavior of the home screen in the application. It provides the core functionality and business logic for the home view, handling user interactions and updating the UI accordingly.",
+      "class_diagram": "@startuml\nclass HomeViewModel {\n  -_dialogService : DialogService\n  -_bottomSheetService : BottomSheetService\n  -_counter : int\n  +counterLabel : String\n  +incrementCounter() : void\n  +showDialog() : void\n  +showBottomSheet() : void\n}\n@enduml",
+      "methods": [
+        {
+          "name": "counterLabel",
+          "description": "Getter that returns the current value of the counter as a formatted string.",
+          "parameters": null,
+          "return_type": "String"
+        },
+        {
+          "name": "incrementCounter",
+          "description": "Increments the counter value and rebuilds the UI to reflect the updated state.",
+          "parameters": null,
+          "return_type": "void"
+        },
+        {
+          "name": "showDialog",
+          "description": "Displays a dialog box with a title and description, prompting the user to give stars to 'Steve' on Github.",
+          "parameters": null,
+          "return_type": "void"
+        },
+        {
+          "name": "showBottomSheet",
+          "description": "Displays a custom bottom sheet with a title and description, presumably for adding a new todo item.",
+          "parameters": null,
+          "return_type": "void"
+        }
+      ],
+      "dependencies": [
+        "package:my_app/app/app.bottomsheets.dart",
+        "package:my_app/app/app.locator.dart",
+        "package:stacked/stacked.dart",
+        "package:stacked_services/stacked_services.dart"
+      ]
+    },
+    {
+      "name": "lib/ui/views/startup/startup_viewmodel.dart",
+      "description": "The `StartupViewModel` class is responsible for handling the initial startup logic of the application. It is part of the MVVM (Model-View-ViewModel) architecture and is used to manage the startup-related state and behavior of the application.",
+      "class_diagram": "@startuml\nclass StartupViewModel {\n  + runStartupLogic(): Future\n}\n\nStartupViewModel --> NavigationService\n@enduml",
+      "methods": [
+        {
+          "name": "runStartupLogic",
+          "description": "This method contains the startup logic that needs to be executed before the application can be fully loaded. It typically includes tasks like checking for user authentication, fetching initial data, or performing other necessary setup operations.",
+          "parameters": null,
+          "return_type": "Future"
+        }
+      ],
+      "dependencies": [
+        "package:my_app/app/app.locator.dart",
+        "package:my_app/app/app.router.dart",
+        "package:stacked/stacked.dart",
+        "package:stacked_services/stacked_services.dart"
+      ]
+    },
+    {
+      "name": "lib/ui/common/app_colors.dart",
+      "description": "This Dart file defines a set of constant color values that are used throughout the application's user interface. It provides a centralized location for managing the application's color palette, ensuring consistent theming and branding across different UI components.",
+      "class_diagram": "",
+      "methods": [],
+      "dependencies": [
+        "package:flutter/material.dart"
+      ]
+    },
+    {
+      "name": "lib/features/todo/widgets/add_todo_sheet.dart",
+      "description": "This file contains the `AddTodoSheet` class, which is responsible for providing a UI widget that allows the user to create a new todo item. It is part of the 'todo' feature in the application.",
+      "class_diagram": "@startuml\nclass AddTodoSheet extends StatelessWidget {\n  -TextEditingController _titleController\n  -TextEditingController _descriptionController\n  +AddTodoSheet({required completer, required request})\n  +Widget build(BuildContext context)\n}\n@enduml",
+      "methods": [
+        {
+          "name": "build",
+          "description": "Builds the UI for the AddTodoSheet widget, including text fields for the title and description, and buttons to cancel or add the new todo item.",
+          "parameters": [
+            "BuildContext context"
+          ],
+          "return_type": "Widget"
+        }
+      ],
+      "dependencies": [
+        "package:flutter/material.dart",
+        "package:stacked_services/stacked_services.dart"
+      ]
+    },
+    {
+      "name": "lib/utils/const/const.dart",
+      "description": "This file contains a collection of constant values and settings that are used throughout the application. It serves as a central location for defining and managing global configuration parameters, file paths, contact information, and a comprehensive list of supported languages.",
+      "class_diagram": "",
+      "methods": [],
+      "dependencies": []
+    },
+    {
+      "name": "lib/utils/contact/contact_util.dart",
+      "description": "The `ContactUtil` class is responsible for providing utility functions to interact with user contacts, specifically for launching WhatsApp and email applications.",
+      "class_diagram": "@startuml\nclass ContactUtil {\n  +static Future<void> launchWhatsApp(String phone, {String text = ''})\n  +static Future<void> launchEmail(String email)\n}\n@enduml",
+      "methods": [
+        {
+          "name": "launchWhatsApp",
+          "description": "Launches the WhatsApp application with a pre-filled phone number and optional message text.",
+          "parameters": [
+            "phone",
+            "text"
+          ],
+          "return_type": "Future<void>"
+        },
+        {
+          "name": "launchEmail",
+          "description": "Launches the default email application with the provided email address.",
+          "parameters": [
+            "email"
+          ],
+          "return_type": "Future<void>"
+        }
+      ],
+      "dependencies": [
+        "dart:async",
+        "dart:io",
+        "package:url_launcher/url_launcher.dart"
+      ]
+    },
+    {
+      "name": "lib/l10n/supported_locales.dart",
+      "description": "This Dart file defines the supported locales and localization delegates for the application. It provides the core functionality for managing the application's internationalization (i18n) and localization (l10n) capabilities.",
+      "class_diagram": "",
+      "methods": [
+        {
+          "name": "localizationsDelegates",
+          "description": "Provides a list of localization delegates, which are responsible for loading the appropriate translations for the supported locales.",
+          "parameters": null,
+          "return_type": "List<LocalizationsDelegate<dynamic>>"
+        },
+        {
+          "name": "supportedLocales",
+          "description": "Provides a list of supported locales for the application, which determines the languages that the user can select from.",
+          "parameters": null,
+          "return_type": "List<Locale>"
+        }
+      ],
+      "dependencies": [
+        "flutter/widgets.dart",
+        "flutter_gen/gen_l10n/app_localizations.dart"
+      ]
+    },
+    {
+      "name": "lib/utils/extensions/color_extension.dart",
+      "description": "This Dart file provides a color extension for the `Color` class in Flutter. It introduces a convenient way to create `Color` instances from hexadecimal color strings, which is a common requirement in UI development.",
+      "class_diagram": "@startuml\nclass Color {\n  +static fromHex(String): Color\n  +static intFromHex(String): int\n}\n@enduml",
+      "methods": [
+        {
+          "name": "fromHex",
+          "description": "Converts a hexadecimal color string (e.g., '#FF0000' for red) into a `Color` instance.",
+          "parameters": [
+            "hexColorString"
+          ],
+          "return_type": "Color"
+        },
+        {
+          "name": "intFromHex",
+          "description": "Converts a hexadecimal color string (e.g., '#FF0000' for red) into an integer representation of the color.",
+          "parameters": [
+            "hexColorString"
+          ],
+          "return_type": "int"
+        }
+      ],
+      "dependencies": [
+        "package:flutter/material.dart"
+      ]
+    },
+    {
+      "name": "lib/ui/dialogs/info_alert/info_alert_dialog.dart",
+      "description": "This Dart file defines the `InfoAlertDialog` class, which is responsible for displaying a customizable information alert dialog within a Flutter app. The dialog provides a way to communicate important messages or notifications to the user in a visually engaging and user-friendly manner.",
+      "class_diagram": "@startuml\nclass InfoAlertDialog {\n  -DialogRequest request\n  -Function(DialogResponse) completer\n  +builder(BuildContext, InfoAlertDialogModel, Widget?): Widget\n  +viewModelBuilder(BuildContext): InfoAlertDialogModel\n}\n@enduml",
+      "methods": [
+        {
+          "name": "builder",
+          "description": "Builds the visual representation of the `InfoAlertDialog` widget, including the title, description, and a custom graphic element. It also includes a 'Got it' button that the user can tap to dismiss the dialog.",
+          "parameters": [
+            "BuildContext",
+            "InfoAlertDialogModel",
+            "Widget?"
+          ],
+          "return_type": "Widget"
+        },
+        {
+          "name": "viewModelBuilder",
+          "description": "Provides an instance of the `InfoAlertDialogModel` class, which is used to manage the state and logic of the `InfoAlertDialog`.",
+          "parameters": [
+            "BuildContext"
+          ],
+          "return_type": "InfoAlertDialogModel"
+        }
+      ],
+      "dependencies": [
+        "package:flutter/material.dart",
+        "package:my_app/ui/common/app_colors.dart",
+        "package:my_app/ui/common/ui_helpers.dart",
+        "package:my_app/ui/dialogs/info_alert/info_alert_dialog_model.dart",
+        "package:stacked/stacked.dart",
+        "package:stacked_services/stacked_services.dart"
+      ]
+    },
+    {
+      "name": "lib/utils/date/date_util.dart",
+      "description": "The DateUtil class provides utility functions for working with date and time values, particularly for handling data from Firestore.",
+      "class_diagram": "@startuml\nclass DateUtil {\n  +static DateTime? fromJson(dynamic value)\n}\n@enduml",
+      "methods": [
+        {
+          "name": "fromJson",
+          "description": "Converts a dynamic value (e.g., from Firestore) to a DateTime object.",
+          "parameters": [
+            "dynamic value"
+          ],
+          "return_type": "DateTime?"
+        }
+      ],
+      "dependencies": [
+        "cloud_firestore/cloud_firestore.dart"
+      ]
+    },
+    {
+      "name": "lib/utils/json/json_util.dart",
+      "description": "The `JsonUtil` class in this file provides utility functions for working with JSON data in a Dart/Flutter application. It solves the problem of safely and consistently converting JSON data to Dart objects, handling edge cases like null values and non-map data structures.",
+      "class_diagram": "@startuml\nclass JsonUtil {\n  +static Map<String, dynamic> formatMap(Map<dynamic, dynamic>)\n  +static T? fromJsonOrNull<T>(dynamic, T Function(Map<String, dynamic>))\n  +static List<T> formatListMap<T>(List<dynamic>, T Function(Map<String, dynamic>))\n}\n@enduml",
+      "methods": [
+        {
+          "name": "formatMap",
+          "description": "Converts a Map<dynamic, dynamic> to a Map<String, dynamic>, removing any null keys.",
+          "parameters": [
+            "Map<dynamic, dynamic>"
+          ],
+          "return_type": "Map<String, dynamic>"
+        },
+        {
+          "name": "fromJsonOrNull",
+          "description": "Safely converts a dynamic JSON value to a typed Dart object, returning null if the input is null or not a Map.",
+          "parameters": [
+            "dynamic",
+            "T Function(Map<String, dynamic>)"
+          ],
+          "return_type": "T?"
+        },
+        {
+          "name": "formatListMap",
+          "description": "Converts a List<dynamic> of JSON maps to a List<T>, where each element is a Dart object created by applying the provided fromJson function to the formatted map.",
+          "parameters": [
+            "List<dynamic>",
+            "T Function(Map<String, dynamic>)"
+          ],
+          "return_type": "List<T>"
+        }
+      ],
+      "dependencies": [
+        "dart:core",
+        "dart:collection"
+      ]
+    },
+    {
+      "name": "lib/config/development/firebase_options_development.dart",
+      "description": "This file is responsible for providing the Firebase configuration options for the development environment of the application. It defines the necessary settings to initialize and interact with the Firebase services, such as the Firebase Realtime Database, Firebase Authentication, and Firebase Cloud Messaging.",
+      "class_diagram": "@startuml\nclass FirebaseOptions {\n  +String apiKey\n  +String appId\n  +String messagingSenderId\n  +String projectId\n  +String storageBucket\n}\n@enduml",
+      "methods": [
+        {
+          "name": "firebase_options_development",
+          "description": "This is a top-level function that returns the FirebaseOptions instance with the necessary configuration values for the development environment.",
+          "parameters": null,
+          "return_type": "FirebaseOptions"
+        }
+      ],
+      "dependencies": [
+        "package:firebase_core/firebase_core.dart"
+      ]
+    },
+    {
+      "name": "lib/l10n/l10n.dart",
+      "description": "This Dart file is responsible for managing the localization and internationalization (l10n) functionality of the application. It serves as the entry point for accessing the localized strings and provides utility functions to handle supported locales.",
+      "class_diagram": "",
+      "methods": [
+        {
+          "name": "AppLocalizations",
+          "description": "The main entry point for accessing the localized strings. This class is generated by the flutter_gen package and provides methods to retrieve the translated strings for the current locale.",
+          "parameters": null,
+          "return_type": "AppLocalizations"
+        },
+        {
+          "name": "LocalizationsExtension",
+          "description": "A utility extension on the BuildContext that provides easy access to the AppLocalizations instance, allowing you to retrieve localized strings directly from the context.",
+          "parameters": null,
+          "return_type": "LocalizationsExtension"
+        },
+        {
+          "name": "SupportedLocales",
+          "description": "A list of the locales supported by the application, which can be used to determine the available translations and handle locale changes.",
+          "parameters": null,
+          "return_type": "List<Locale>"
+        }
+      ],
+      "dependencies": [
+        "package:flutter_gen/gen_l10n/app_localizations.dart",
+        "localizations_extension.dart",
+        "supported_locales.dart"
+      ]
+    },
+    {
+      "name": "lib/ui/views/home/home_view.dart",
+      "description": "The `HomeView` class is the primary UI component responsible for rendering the home screen of the application. It uses the `HomeViewModel` class to manage the application state and handle user interactions.",
+      "class_diagram": "@startuml\nclass HomeView {\n  +builder(BuildContext, HomeViewModel, Widget?): Widget\n  +viewModelBuilder(BuildContext): HomeViewModel\n}\n\nclass HomeViewModel {\n  +incrementCounter(): void\n  +showDialog(): void\n  +showBottomSheet(): void\n  +counterLabel: String\n}\n@enduml",
+      "methods": [
+        {
+          "name": "builder",
+          "description": "Builds the UI of the home screen, including a title, a counter button, and buttons to show a dialog and a bottom sheet.",
+          "parameters": [
+            "BuildContext",
+            "HomeViewModel",
+            "Widget?"
+          ],
+          "return_type": "Widget"
+        },
+        {
+          "name": "viewModelBuilder",
+          "description": "Provides an instance of the `HomeViewModel` to the `StackedView` widget, which is responsible for managing the lifecycle and state of the view model.",
+          "parameters": [
+            "BuildContext"
+          ],
+          "return_type": "HomeViewModel"
+        }
+      ],
+      "dependencies": [
+        "package:flutter/material.dart",
+        "package:gap/gap.dart",
+        "package:my_app/ui/views/home/home_viewmodel.dart",
+        "package:stacked/stacked.dart"
+      ]
+    },
+    {
+      "name": "lib/models/todo.dart",
+      "description": "This Dart file defines the `Todo` class, which represents a single task or item in a to-do list. The `Todo` class encapsulates the core data and functionality needed to manage and track the status of a todo item.",
+      "class_diagram": "@startuml\nclass Todo {\n  -String id\n  -String title\n  -bool isCompleted\n  -DateTime? completedAt\n  +Todo(id, title, [isCompleted = false, completedAt])\n  +copyWith(id, title, isCompleted, completedAt)\n}\n@enduml",
+      "methods": [
+        {
+          "name": "Todo",
+          "description": "The constructor for the `Todo` class, which takes the required `id` and `title` parameters, and the optional `isCompleted` and `completedAt` parameters.",
+          "parameters": [
+            "id",
+            "title",
+            "[isCompleted = false]",
+            "completedAt"
+          ],
+          "return_type": "Todo"
+        },
+        {
+          "name": "copyWith",
+          "description": "A copy method that creates a new `Todo` instance with the specified updates to the `id`, `title`, `isCompleted`, and `completedAt` properties.",
+          "parameters": [
+            "id",
+            "title",
+            "isCompleted",
+            "completedAt"
+          ],
+          "return_type": "Todo"
+        }
+      ],
+      "dependencies": []
+    },
+    {
+      "name": "lib/features/todo/todo_viewmodel.dart",
+      "description": "The TodoViewModel class is responsible for managing the state and business logic of the todo list feature in the application. It provides the core functionality for creating, reading, updating, and deleting todo items, as well as handling the user interface interactions.",
+      "class_diagram": "@startuml\nclass TodoViewModel {\n  - _todoService: TodoService\n  - _bottomSheetService: BottomSheetService\n  - _todos: List<Todo>\n  + get todos: List<Todo>\n\n  + initialize(): Future<void>\n  + _loadTodos(): Future<void>\n  + addTodo(title: String, description: String): Future<void>\n  + toggleTodo(todo: Todo): Future<void>\n  + deleteTodo(id: String): Future<void>\n  + showAddTodoSheet(): Future<void>\n}\n@enduml",
+      "methods": [
+        {
+          "name": "initialize",
+          "description": "Initializes the ViewModel by loading the existing todos from the TodoService.",
+          "parameters": null,
+          "return_type": "Future<void>"
+        },
+        {
+          "name": "_loadTodos",
+          "description": "Retrieves the list of todos from the TodoService and updates the internal _todos list.",
+          "parameters": null,
+          "return_type": "Future<void>"
+        },
+        {
+          "name": "addTodo",
+          "description": "Creates a new todo item with the provided title and description, and adds it to the TodoService.",
+          "parameters": [
+            "title: String",
+            "description: String"
+          ],
+          "return_type": "Future<void>"
+        },
+        {
+          "name": "toggleTodo",
+          "description": "Toggles the completion status of the provided todo item in the TodoService.",
+          "parameters": [
+            "todo: Todo"
+          ],
+          "return_type": "Future<void>"
+        },
+        {
+          "name": "deleteTodo",
+          "description": "Deletes the todo item with the provided ID from the TodoService.",
+          "parameters": [
+            "id: String"
+          ],
+          "return_type": "Future<void>"
+        },
+        {
+          "name": "showAddTodoSheet",
+          "description": "Displays a custom bottom sheet to allow the user to enter a new todo item, and then adds the new todo to the TodoService.",
+          "parameters": null,
+          "return_type": "Future<void>"
+        }
+      ],
+      "dependencies": [
+        "stacked/stacked.dart",
+        "my_app/models/todo.dart",
+        "my_app/services/todo_service.dart",
+        "stacked_services/stacked_services.dart",
+        "my_app/app/app.bottomsheets.dart",
+        "my_app/app/app.locator.dart",
+        "my_app/features/todo/todo_repository.dart"
+      ]
+    },
+    {
+      "name": "lib/main/main_production.dart",
+      "description": "This file is responsible for bootstrapping the main production application view and setting the application flavor to 'production'.",
+      "class_diagram": "",
+      "methods": [
+        {
+          "name": "main",
+          "description": "The entry point of the application. It bootstraps the application with the production flavor and the AppView as the root widget.",
+          "parameters": null,
+          "return_type": "void"
+        }
+      ],
+      "dependencies": [
+        "package:my_app/main/bootstrap.dart",
+        "package:my_app/models/enums/flavor.dart",
+        "package:my_app/ui/views/app/app_view.dart"
+      ]
+    },
+    {
+      "name": "lib/main/bootstrap.dart",
+      "description": "This file is responsible for bootstrapping the Flutter application, setting up the necessary dependencies and configurations to ensure a smooth startup process.",
+      "class_diagram": "",
+      "methods": [
+        {
+          "name": "bootstrap",
+          "description": "The main entry point that initializes the Flutter app and sets up the necessary components for the application to run.",
+          "parameters": [
+            "builder",
+            "flavor"
+          ],
+          "return_type": "Future<void>"
+        }
+      ],
+      "dependencies": [
+        "dart:async",
+        "package:flutter/material.dart",
+        "package:flutter/services.dart",
+        "package:my_app/app/app.bottomsheets.dart",
+        "package:my_app/app/app.locator.dart",
+        "package:my_app/models/enums/flavor.dart",
+        "package:my_app/utils/flavors/flavors.dart"
+      ]
+    },
+    {
+      "name": "lib/utils/flavors/flavors.dart",
+      "description": "This Dart file is responsible for managing the current app flavor, which determines the environment-specific configuration and behavior of the application. It provides a centralized way to access and check the active app flavor, helping to ensure consistent behavior across different deployment environments.",
+      "class_diagram": "@startuml\nclass Flavors {\n  - Flavors._()\n  + factory Flavors()\n  + static Flavor? flavor\n  + static bool get isDev\n  + static bool get isProd\n}\n@enduml",
+      "methods": [
+        {
+          "name": "Flavors",
+          "description": "Private constructor for the Flavors class. This ensures that the class can only be instantiated through the factory method.",
+          "parameters": null,
+          "return_type": null
+        },
+        {
+          "name": "Flavors.factory",
+          "description": "Factory method that returns the singleton instance of the Flavors class.",
+          "parameters": null,
+          "return_type": "Flavors"
+        },
+        {
+          "name": "flavor",
+          "description": "Static property that holds the current app flavor. This can be set to one of the values in the Flavor enum.",
+          "parameters": null,
+          "return_type": "Flavor?"
+        },
+        {
+          "name": "isDev",
+          "description": "Static getter that returns true if the current app flavor is Flavor.development.",
+          "parameters": null,
+          "return_type": "bool"
+        },
+        {
+          "name": "isProd",
+          "description": "Static getter that returns true if the current app flavor is Flavor.production.",
+          "parameters": null,
+          "return_type": "bool"
+        }
+      ],
+      "dependencies": [
+        "my_app/models/enums/flavor.dart"
+      ]
+    },
+    {
+      "name": "lib/config/production/firebase_options_production.dart",
+      "description": "This Dart file is responsible for providing the necessary configuration options for the Firebase services used in the production environment of the application.",
+      "class_diagram": "",
+      "methods": [],
+      "dependencies": [
+        "firebase_core",
+        "firebase_auth",
+        "firebase_storage",
+        "firebase_firestore"
+      ]
+    },
+    {
+      "name": "lib/utils/exceptions/api_exception.dart",
+      "description": "This Dart file defines a custom exception class called `APIException` that is used to handle and propagate errors that occur in the API service layer of the application.",
+      "class_diagram": "@startuml\n  class APIException implements Exception {\n    -dynamic message\n    +toString(): String\n  }\n  @enduml",
+      "methods": [
+        {
+          "name": "APIException",
+          "description": "The constructor for the `APIException` class. It takes an optional `message` parameter, which can be any dynamic value that provides additional context about the error.",
+          "parameters": [
+            "message"
+          ],
+          "return_type": null
+        },
+        {
+          "name": "toString",
+          "description": "The `toString()` method overrides the default implementation to return a string representation of the `APIException` instance, including its runtime type and the `message` value.",
+          "parameters": [],
+          "return_type": "String"
+        }
+      ],
+      "dependencies": []
+    },
+    {
+      "name": "lib/features/todo/models/todo.dart",
+      "description": "This file defines the Todo class, which represents a single task or item in a todo list application. The Todo class encapsulates the essential data and functionality related to a todo item, including its unique ID, title, description, completion status, creation timestamp, and optional completion timestamp.",
+      "class_diagram": "@startuml\nclass Todo {\n  +String id\n  +String title\n  +String description\n  +bool isCompleted\n  +DateTime createdAt\n  +DateTime? completedAt\n\n  +Todo copyWith({...})\n  +List<Object?> get props\n}\n@enduml",
+      "methods": [
+        {
+          "name": "Todo",
+          "description": "The constructor for the Todo class, which takes the required parameters of ID, title, description, creation timestamp, and optionally the completion timestamp. It also provides a default value of false for the isCompleted property.",
+          "parameters": [
+            "id",
+            "title",
+            "description",
+            "isCompleted",
+            "createdAt",
+            "completedAt"
+          ],
+          "return_type": "Todo"
+        },
+        {
+          "name": "copyWith",
+          "description": "The copyWith method allows you to create a new Todo instance with one or more properties modified, while keeping the rest of the properties unchanged. This is a common pattern in immutable data structures to facilitate state updates.",
+          "parameters": [
+            "id",
+            "title",
+            "description",
+            "isCompleted",
+            "createdAt",
+            "completedAt"
+          ],
+          "return_type": "Todo"
+        },
+        {
+          "name": "get props",
+          "description": "The get props method returns a list of all the properties of the Todo class. This is used by the Equatable mixin to provide a default implementation of the == and hashCode operators, which is essential for using the Todo class in collections and for comparing instances.",
+          "parameters": null,
+          "return_type": "List<Object?>"
+        }
+      ],
+      "dependencies": [
+        "package:equatable/equatable.dart"
+      ]
+    },
+    {
+      "name": "lib/ui/views/startup/startup_view.dart",
+      "description": "The `StartupView` class is responsible for rendering the initial startup screen of the application. It displays a loading indicator and the app's title, serving as the entry point for the user when the app is launched.",
+      "class_diagram": "@startuml\nclass StartupView {\n  +Widget builder(BuildContext, StartupViewModel, Widget?)\n  +StartupViewModel viewModelBuilder(BuildContext)\n  +void onViewModelReady(StartupViewModel)\n}\n\nclass StartupViewModel {\n  +void runStartupLogic()\n}\n\nStartupView *-- StartupViewModel\n@enduml",
+      "methods": [
+        {
+          "name": "builder",
+          "description": "Builds the UI for the startup screen, displaying the app title and a loading indicator.",
+          "parameters": [
+            "BuildContext",
+            "StartupViewModel",
+            "Widget?"
+          ],
+          "return_type": "Widget"
+        },
+        {
+          "name": "viewModelBuilder",
+          "description": "Creates an instance of the `StartupViewModel` to provide the necessary logic and data for the startup screen.",
+          "parameters": [
+            "BuildContext"
+          ],
+          "return_type": "StartupViewModel"
+        },
+        {
+          "name": "onViewModelReady",
+          "description": "Executes the startup logic when the view model is ready, typically kicking off any necessary initialization or data loading tasks.",
+          "parameters": [
+            "StartupViewModel"
+          ],
+          "return_type": null
+        }
+      ],
+      "dependencies": [
+        "flutter/material.dart",
+        "flutter/scheduler.dart",
+        "gap/gap.dart",
+        "my_app/ui/views/startup/startup_viewmodel.dart",
+        "stacked/stacked.dart"
+      ]
+    },
+    {
+      "name": "lib/main/main_development.dart",
+      "description": "This Dart file is responsible for bootstrapping the development version of the main application. It sets up the initial app configuration and entry point, ensuring the application is launched with the correct 'development' flavor.",
+      "class_diagram": "",
+      "methods": [
+        {
+          "name": "main()",
+          "description": "The main entry point of the application. It calls the `bootstrap()` function to initialize the app, passing in the `AppView` as the root widget and the 'development' flavor.",
+          "parameters": null,
+          "return_type": "void"
+        }
+      ],
+      "dependencies": [
+        "package:my_app/main/bootstrap.dart",
+        "package:my_app/models/enums/flavor.dart",
+        "package:my_app/ui/views/app/app_view.dart"
+      ]
+    },
+    {
+      "name": "lib/models/enums/flavor.dart",
+      "description": "This Dart file defines an enumeration called `Flavor` that represents the different deployment flavors or environments of the application, specifically `production` and `development`. The `Flavor` enum is a fundamental part of the application's architecture, providing a way to differentiate between the production and development environments.",
+      "class_diagram": "@startuml\nclass Flavor {\n  + production\n  + development\n}\n@enduml",
+      "methods": [],
+      "dependencies": []
+    },
+    {
+      "name": "lib/features/todo/widgets/todo_item.dart",
+      "description": "The TodoItem class is responsible for rendering a single todo item in a list of todos. It displays the todo's title, description, creation and completion dates, and provides controls to toggle the todo's completion status and delete the todo.",
+      "class_diagram": "@startuml\nclass TodoItem {\n  +Todo todo\n  +VoidCallback onToggle\n  +VoidCallback onDelete\n  +build(BuildContext): Widget\n}\n@enduml",
+      "methods": [
+        {
+          "name": "build",
+          "description": "Constructs the UI for a single todo item, including a checkbox to toggle completion, the todo title and description, creation and completion dates, and a delete button.",
+          "parameters": [
+            "BuildContext"
+          ],
+          "return_type": "Widget"
+        }
+      ],
+      "dependencies": [
+        "package:flutter/material.dart",
+        "package:my_app/models/todo.dart",
+        "package:intl/intl.dart"
+      ]
+    },
+    {
+      "name": "lib/ui/bottom_sheets/notice/notice_sheet.dart",
+      "description": "The `NoticeSheet` class is responsible for rendering a bottom sheet UI component that displays a notice or alert to the user. It is typically used to show important information or messages that require the user's attention.",
+      "class_diagram": "@startuml\nclass NoticeSheet extends StackedView<NoticeSheetModel> {\n  -Function(SheetResponse)? completer\n  -SheetRequest request\n  +builder(BuildContext, NoticeSheetModel, Widget?)\n  +viewModelBuilder(BuildContext): NoticeSheetModel\n}\n\nclass NoticeSheetModel {\n  # initialize()\n}\n\nclass StackedView<T> {\n  +builder(BuildContext, T, Widget?)\n  +viewModelBuilder(BuildContext): T\n}\n@enduml",
+      "methods": [
+        {
+          "name": "builder",
+          "description": "Builds the UI for the `NoticeSheet` using the provided `NoticeSheetModel` and `SheetRequest` data.",
+          "parameters": [
+            "BuildContext",
+            "NoticeSheetModel",
+            "Widget?"
+          ],
+          "return_type": "Widget"
+        },
+        {
+          "name": "viewModelBuilder",
+          "description": "Provides a new instance of the `NoticeSheetModel` to be used by the `StackedView` parent class.",
+          "parameters": [
+            "BuildContext"
+          ],
+          "return_type": "NoticeSheetModel"
+        }
+      ],
+      "dependencies": [
+        "package:flutter/material.dart",
+        "package:my_app/ui/bottom_sheets/notice/notice_sheet_model.dart",
+        "package:my_app/ui/common/app_colors.dart",
+        "package:my_app/ui/common/ui_helpers.dart",
+        "package:stacked/stacked.dart",
+        "package:stacked_services/stacked_services.dart"
+      ]
     }
   ],
   "dependencies": [
@@ -137,7 +1231,7 @@
       "purpose": "Creating gaps in layouts"
     }
   ],
-  "sequence_diagram": "@startuml\nactor User\nparticipant main\nparticipant AppView\nparticipant StartupView\nparticipant StartupViewModel\nparticipant HomeView\nparticipant HomeViewModel\n\nUser -> main: Launch app\nmain -> AppView: Create and run\nAppView -> StartupView: Initialize\nStartupView -> StartupViewModel: Run startup logic\nStartupViewModel -> HomeView: Navigate on completion\nHomeView -> HomeViewModel: Initialize\nUser -> HomeView: Interact\nHomeView -> HomeViewModel: Handle user actions\nHomeViewModel -> HomeView: Update UI\nHomeViewModel -> DialogService: Show dialog\nHomeViewModel -> BottomSheetService: Show bottom sheet\n@enduml",
-  "state_management_flow": "State is managed using the Stacked architecture. ViewModels (e.g., HomeViewModel, StartupViewModel) handle the business logic and state for their respective views. The app.locator.dart file sets up dependency injection, while app.router.dart manages navigation between views.",
-  "navigation_flow": "The application starts with main.dart, which sets up the app and runs AppView. AppView initializes the Stacked architecture and shows the StartupView. After completing initialization logic, it navigates to the HomeView. Navigation between views is handled by the Stacked Router defined in app.router.dart."
+  "sequence_diagram": "@startuml\nactor User\nparticipant main\nparticipant AppView\nparticipant StartupView\nparticipant StartupViewModel\nparticipant HomeView\nparticipant HomeViewModel\nparticipant TodoView\nparticipant TodoViewModel\n\nUser -> main: Launch app\nmain -> AppView: Create and run\nAppView -> StartupView: Initialize\nStartupView -> StartupViewModel: Run startup logic\nStartupViewModel -> HomeView: Navigate on completion\nHomeView -> HomeViewModel: Initialize\nUser -> HomeView: Interact (e.g., open Todo view)\nHomeView -> TodoView: Navigate to Todo view\nTodoView -> TodoViewModel: Initialize\nTodoViewModel -> TodoRepository: Load todos\nTodoViewModel -> TodoView: Render todo list\nUser -> TodoView: Interact (e.g., add, toggle, delete todo)\nTodoView -> TodoViewModel: Handle user actions\nTodoViewModel -> TodoRepository: Perform CRUD operations\nTodoViewModel -> TodoView: Update UI\n@enduml",
+  "state_management_flow": "The application uses the Stacked architecture's built-in state management approach. Each view has a corresponding ViewModel class that handles the business logic and state for that view. The ViewModels interact with various services, such as the TodoService and DialogService, to manage the application state and handle user interactions. The state is then reflected in the UI through the build method of the respective View classes.",
+  "navigation_flow": "The navigation flow is managed using the Stacked Router, which is defined in the app.router.dart file. The StackedApp annotation in the app.dart file sets up the available routes, including the HomeView and TodoView. Navigation between these views is handled by the NavigationService, which is provided by the Stacked Services library and registered in the app.locator.dart file. User interactions, such as tapping on a button or menu item, trigger navigation actions that are handled by the ViewModels and propagated to the NavigationService."
 }
