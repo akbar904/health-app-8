@@ -1,10 +1,12 @@
-import 'package:my_app/models/todo.dart';
+import 'package:my_app/features/todo/models/todo.dart';
 
 class TodoRepository {
   final List<Todo> _todos = [];
 
+  TodoRepository();
+
   Future<List<Todo>> getTodos() async {
-    return Future.value(_todos);
+    return _todos;
   }
 
   Future<void> addTodo(Todo todo) async {

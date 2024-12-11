@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:my_app/app/app.bottomsheets.dart';
-import 'package:my_app/app/app.dialogs.dart';
 import 'package:my_app/app/app.locator.dart';
 import 'package:my_app/models/enums/flavor.dart';
 import 'package:my_app/utils/flavors/flavors.dart';
@@ -22,7 +21,6 @@ Future<void> bootstrap({
       ]);
 
       await setupLocator();
-      setupDialogUi();
       setupBottomSheetUi();
 
       runApp(

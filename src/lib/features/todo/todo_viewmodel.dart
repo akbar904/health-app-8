@@ -2,10 +2,13 @@ import 'package:stacked/stacked.dart';
 import 'package:my_app/models/todo.dart';
 import 'package:my_app/services/todo_service.dart';
 import 'package:stacked_services/stacked_services.dart';
+import 'package:my_app/app/app.bottomsheets.dart';
+import 'package:my_app/app/app.locator.dart';
+import 'package:my_app/features/todo/todo_repository.dart';
 
 class TodoViewModel extends BaseViewModel {
-  final _todoService = TodoService(TodoRepository());
-  final _bottomSheetService = BottomSheetService();
+  final _todoService = locator<TodoService>();
+  final _bottomSheetService = locator<BottomSheetService>();
 
   List<Todo> _todos = [];
   List<Todo> get todos => _todos;
@@ -44,7 +47,7 @@ class TodoViewModel extends BaseViewModel {
 
   Future<void> showAddTodoSheet() async {
     final result = await _bottomSheetService.showCustomSheet(
-      variant: BottomSheetType.notice,
+      variant: BottomSheetType.addTodo,
       title: 'Add Todo',
       description: 'Enter todo details',
     );
